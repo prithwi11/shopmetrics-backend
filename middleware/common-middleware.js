@@ -34,13 +34,15 @@ module.exports = class validatorCls {
                 token = token.slice(7, token.length)
             } 
             if (token) {
-                global.Helpers.verifyAccessToken(token)
-                    .then(() => {
+                try {
+                    const checkToken = await global.Helpers.verifyAccessToken(token)
+                    if (checkToken) {
                         next()
-                    })
-                    .catch ((err) => {
-                        global.Helpers.forbiddenStatusBuild(res, 'Invalid Token. Access Forbidden.');
-                    })
+                    }
+                }
+                catch (e) {
+                    global.Helpers.forbiddenStatusBuild(res, 'Invalid Token. Access Forbidden.');
+                }
             }
             else {
                 global.Helpers.forbiddenStatusBuild(res, 'Invalid Token. Access Forbidden.');    
