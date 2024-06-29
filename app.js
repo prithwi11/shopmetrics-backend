@@ -17,7 +17,9 @@ let CommonFunction = require('./helper/CommonHelper')
 global.Helpers = new CommonFunction()
 
 let userRoute = require('./routes/user_route')
+let orderRoute = require('./routes/order')
 app.use('/api/v1/user', userRoute)
+app.use('/api/v1/order', orderRoute)
 
 app.listen(process.env.PORT, () => {
     console.log(`App is listening on http://localhost:${process.env.PORT}`)
