@@ -8,13 +8,21 @@ module.exports = class orderController {
         try {
             let reqBody = req.body
             let response_dataset = {}
-            let orderList = await this.orderModelObj.fetchAllOrders(reqBody)
-            if (orderList.length > 0) {
-                response_dataset.order_list = orderList
+            let orderListFromRedis = await global.RedisHelper.fetchDataRedis('orderList')
+            if (orderListFromRedis) {
+                response_dataset.order_list = JSON.parse(orderListFromRedis)
                 global.Helpers.successStatusBuild(res, response_dataset, 'Order fetched successfully')
             }
             else {
-                global.Helpers.successStatusBuild(res, [], 'No order found')
+                let orderList = await this.orderModelObj.fetchAllOrders(reqBody)
+                await global.RedisHelper.setDataRedis('orderList', JSON.stringify(orderList))
+                if (orderList.length > 0) {
+                    response_dataset.order_list = orderList
+                    global.Helpers.successStatusBuild(res, response_dataset, 'Order fetched successfully')
+                }
+                else {
+                    global.Helpers.successStatusBuild(res, [], 'No order found')
+                }
             }
         }
         catch (e) {

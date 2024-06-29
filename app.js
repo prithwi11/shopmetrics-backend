@@ -16,6 +16,9 @@ global.CONFIG = require('./config/env/' + process.env.APP_ENV)
 let CommonFunction = require('./helper/CommonHelper')
 global.Helpers = new CommonFunction()
 
+let RedisFunction = require('./helper/RedisHelper')
+global.RedisHelper = new RedisFunction()
+
 let userRoute = require('./routes/user_route')
 let orderRoute = require('./routes/order')
 app.use('/api/v1/user', userRoute)
