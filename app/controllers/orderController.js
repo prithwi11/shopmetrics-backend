@@ -75,17 +75,20 @@ module.exports = class orderController {
                 let insert_data = await this.orderModelObj.singleUpload(insert_obj)
                 if (insert_data) {
                     let updatedList
-                    let orderListRedis =  JSON.parse(await global.RedisHelper.fetchDataRedis('orderList'))
-                    let redis_insert = {
-                        '_id' : insert_data._id,
-                        'order_id' : insert_data.order_id,
-                        'order_date' : insert_data.order_date,
-                        'order_status' : insert_data.order_status,
-                        'order_amount' : insert_data.order_amount,
-                        'order_ship_city' : insert_data.order_ship_city
+                    let orderListRedisstr =  await global.RedisHelper.fetchDataRedis('orderList')
+                    if (orderListRedisstr) {
+                        let orderListRedis = JSON.parse(orderListRedisstr)
+                        let redis_insert = {
+                            '_id' : insert_data._id,
+                            'order_id' : insert_data.order_id,
+                            'order_date' : insert_data.order_date,
+                            'order_status' : insert_data.order_status,
+                            'order_amount' : insert_data.order_amount,
+                            'order_ship_city' : insert_data.order_ship_city
+                        }
+                        updatedList = [redis_insert, ...orderListRedis]
+                        await global.RedisHelper.setDataRedis('orderList', JSON.stringify(updatedList))    
                     }
-                    updatedList = [redis_insert, ...orderListRedis]
-                    await global.RedisHelper.setDataRedis('orderList', JSON.stringify(updatedList))
                     response_dataset.order_details = insert_data
                 }
                 else {
@@ -115,7 +118,14 @@ module.exports = class orderController {
 
                     let update_data = await this.orderModelObj.updateOne({_id : reqBody.id}, update_obj)
                     if (update_data) {
-                        
+                        let orderListStr = await global.RedisHelper.fetchDataRedis('orderList')
+                        if (orderListStr) {
+                            let orderList = JSON.parse(orderListStr)
+                            let updatedList = []
+                            let orderListFilter = orderList.filter(order => order._id != reqBody.id)
+                            updatedList = [...orderListFilter, update_data]
+                            await global.RedisHelper.setDataRedis('orderList', JSON.stringify(updatedList))
+                        }
                         response_dataset.order_details = update_data
                     }
                     else {
@@ -141,6 +151,14 @@ module.exports = class orderController {
             let id = reqBody.id
             let delete_data = await this.orderModelObj.deleteByAny({_id : id})
             if (delete_data) {
+                let orderListStr = await global.RedisHelper.fetchDataRedis('orderList')
+                if (orderListStr) {
+                    let orderList = JSON.parse(orderListStr)
+                    let updatedList = []
+                    let orderListFilter = orderList.filter(order => order._id != id)
+                    updatedList = [...orderListFilter]
+                    await global.RedisHelper.setDataRedis('orderList', JSON.stringify(updatedList))
+                }
                 global.Helpers.successStatusBuild(res, [], 'Order deleted successfully!')
             }
             else {

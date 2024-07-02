@@ -71,7 +71,7 @@ class orderModel extends Model {
 
         limitAggr = {$limit : parseInt(data.rows)}
         offsetAggr = {$skip : parseInt(data.first)}
-        sortAggr = {$sort : {order_date : 1}}
+        sortAggr = {$sort : {order_date : -1}}
         attributeAggr = {$project : {
             _id : 1,
             order_id : 1,
@@ -83,9 +83,9 @@ class orderModel extends Model {
 
         return this.Model.aggregate(
             [
+                sortAggr,
                 limitAggr,
                 offsetAggr,
-                sortAggr,
                 attributeAggr
             ]
         )
