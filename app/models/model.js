@@ -27,7 +27,7 @@ class Model {
     }
 
     singleUpload(dataObj) {
-        return this.Model.insertOne(dataObj)
+        return this.Model.create(dataObj)
     }
 
     updateOne(filterObj, updateObj) {
@@ -42,7 +42,12 @@ class Model {
         return this.Model.count(filterObj)
     }
 
-
+    deleteByAny(filterObj) {
+        return this.Model.deleteOne(filterObj)
+    }
+    deleteByMany (filterObj) {
+        return this.Model.deleteMany(filterObj)
+    }
 }
 
 module.exports = Model

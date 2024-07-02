@@ -11,6 +11,9 @@ const redisFunc = class redisClass {
     fetchDataRedis(key) {
         return this.client.get(key)
     }
+    deleteDataRedis(key, data) {
+        this.client.del(key)
+    }
 }
 
 module.exports = redisFunc

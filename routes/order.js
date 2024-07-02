@@ -27,4 +27,20 @@ middlewares = [
 router.route('/detail')
     .post(middlewares, this.orderControllerObj.detail)
 
+middlewares = [
+    commonMiddlewareObj.validateToken,
+    orderMiddlewareObj.saveValidationRule(),
+    commonMiddlewareObj.checkforerrors
+]
+router.route('/save')
+    .post(middlewares, this.orderControllerObj.save)
+
+middlewares = [
+    commonMiddlewareObj.validateToken,
+    orderMiddlewareObj.deleteValidationRule,
+    commonMiddlewareObj.checkforerrors
+]
+router.route('/delete')
+    .post(middlewares, this.orderControllerObj.delete)
+
 module.exports = router
