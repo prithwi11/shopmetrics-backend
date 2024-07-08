@@ -19,3 +19,5 @@ middlewares = [
 ]
 router.route('/save')
     .post(middlewares, this.roleControllerObj.save)
+
+module.exports = router

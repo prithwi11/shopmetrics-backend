@@ -10,6 +10,10 @@ class Model {
         this.Model = mongoose.model(name, schema)
     }
 
+    findAllByAny(dataObj) {
+        return this.Model.find(dataObj)
+    }
+
     findByAny(dataObj) {
         return this.Model.findOne(dataObj)
     }

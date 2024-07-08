@@ -44,4 +44,41 @@ module.exports = class roleController {
             global.Helpers.badRequestStatusBuild(res, 'Some error occurred!')
         }
     }
+
+    list = async(req, res) => {
+        try {
+            let response_dataset = {}
+            let role_list = await this.roleModelObj.findAllByAny({})
+            if (role_list) {
+                response_dataset.role_list = role_list
+                global.Helpers.successStatusBuild(res, response_dataset, 'Role list fetched successfully')
+            }
+            else {
+                    global.Helpers.badRequestStatusBuild(res, 'Some error occurred!')
+            }
+        }
+        catch (e) {
+            console.log(e)
+            global.Helpers.badRequestStatusBuild(res, 'Some error occurred!')
+        }
+    }
+
+    editView = async(req, res) => {
+        try {
+            let response_dataset = {}
+            let role_id = req.body.role_id
+            let role_edit = await this.roleModelObj.findByAny({ _id: role_id })
+            if (role_edit) {
+                response_dataset.role_edit = role_edit
+                global.Helpers.successStatusBuild(res, response_dataset, 'Role fetched successfully')
+            }
+            else {
+                global.Helpers.badRequestStatusBuild(res, 'Some error occurred!')
+            }
+        }
+        catch (e) {
+            console.log(e)
+            global.Helpers.badRequestStatusBuild(res, 'Some error occurred!')
+        }
+    }
 }
