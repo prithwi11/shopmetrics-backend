@@ -10,4 +10,10 @@ module.exports = class validatorCls {
             this.check('password').trim().not().isEmpty().withMessage("Please provide password")
         ]
     }
+
+    addUserValidationRule() {
+        return [
+            this.check('email').trim().not().isEmpty().withMessage("Please provide email").isEmail().withMessage("Please provide valid email")
+        ]
+    }
 }

@@ -16,8 +16,12 @@ class userModel extends Model {
             last_name : {
                 type : String
             },
-            role : {
-                type : String
+            is_verified : {
+                type : Boolean,
+                default : false
+            },
+            user_role_mapping : {
+                type : Object
             },
             added_timestamp : {
                 type : Date,

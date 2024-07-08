@@ -21,8 +21,10 @@ global.RedisHelper = new RedisFunction()
 
 let userRoute = require('./routes/user_route')
 let orderRoute = require('./routes/order')
+let roleRoute = require('./routes/role')
 app.use('/api/v1/user', userRoute)
 app.use('/api/v1/order', orderRoute)
+app.use('/api/v1/role', roleRoute)
 
 app.listen(process.env.PORT, () => {
     console.log(`App is listening on http://localhost:${process.env.PORT}`)

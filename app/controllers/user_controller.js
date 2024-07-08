@@ -65,4 +65,53 @@ module.exports = class userController {
             global.Helpers.badRequestStatusBuild(res, 'Some error occurred')
         }
     }
+
+    addAdminUser = async(req, res) => {
+        try {
+            let response_dataset = {}
+            let reqBody = req.body
+
+            if (!reqBody.user_id) {
+                let add_user_obj  = {}
+                add_user_obj['email'] = reqBody.email
+                add_user_obj['password'] = await global.Helpers.hashPassword('123456')
+                add_user_obj['first_name'] = reqBody.first_name
+                add_user_obj['last_name'] = reqBody.last_name
+                if (reqBody.role_name) {
+                    add_user_obj['user_role_mappings'] = {}
+                    add_user_obj['user_role_mappings']['role_name'] = reqBody.role_name
+                }
+                
+                let insertData = await this.userModelObj.singleUpload(add_user_obj)
+                if (insertData) {
+                    response_dataset.user_details = insertData
+                    global.Helpers.successStatusBuild(res, response_dataset, 'User added successfully!')
+                }
+                else {
+                    global.Helpers.badRequestStatusBuild(res, 'Some error occurred')    
+                }
+            }
+            else {
+                let update_user_obj = {}
+                let update_user_cond = {}
+                update_user_cond['_id'] = reqBody.user_id
+                update_user_obj['email'] = reqBody.email
+                update_user_obj['first_name'] = reqBody.first_name
+                update_user_obj['last_name'] = reqBody.last_name
+                if (reqBody.password) {
+                    update_user_obj['password'] = await global.Helpers.hashPassword(reqBody.password)
+                }
+                if (reqBody.role_name) {
+                    update_user_obj['user_role_mappings'] = {}
+                    update_user_obj['user_role_mappings']['role_name'] = reqBody.role_name
+                }
+                let updateData = await this.userModelObj.updateOne(update_user_cond, update_user_obj)
+                global.helpers.successStatusBuild(res, "User updated successfully")
+            }            
+        }
+        catch (e) {
+            console.log(e)
+            global.Helpers.badRequestStatusBuild(res, 'Some error occurred')
+        }
+    }
 }
