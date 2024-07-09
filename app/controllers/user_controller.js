@@ -2,6 +2,9 @@ module.exports = class userController {
     constructor() {
         const userModel = require('../models/model.users')
         this.userModelObj = new userModel()
+
+        const roleModel = require('../models/model.roles')
+        this.roleModelObj = new roleModel()
     }
 
     getUser = async(req, res) => {
@@ -43,6 +46,9 @@ module.exports = class userController {
                                 response_dataset.first_name = checkEmail.first_name
                                 response_dataset.last_name = checkEmail.last_name
                                 response_dataset.email = checkEmail.email
+                                if (checkEmail.user_role_mappings) {
+                                    response_dataset.user_role_mappings = checkEmail.user_role_mappings
+                                }
 
                                 return global.Helpers.successStatusBuild(res, response_dataset, 'Login successfully!')
                             }
@@ -108,6 +114,38 @@ module.exports = class userController {
                 let updateData = await this.userModelObj.updateOne(update_user_cond, update_user_obj)
                 global.helpers.successStatusBuild(res, "User updated successfully")
             }            
+        }
+        catch (e) {
+            console.log(e)
+            global.Helpers.badRequestStatusBuild(res, 'Some error occurred')
+        }
+    }
+
+    assignRoleToUser = async(req, res) => {
+        try {
+            let reqBody = req.body
+            if (!reqBody.user_id) {
+                global.Helpers.badRequestStatusBuild(res, 'User id not provided')
+            }
+            let user_details = await this.userModelObj.findByAny({_id : reqBody.user_id})
+            if (user_details) {
+                let role_id = reqBody.role_id
+                let role_details = await this.roleModelObj.findByAny({_id : role_id})
+                if (role_details) {
+                    let user_update_obj = {}
+                    user_update_obj['user_role_mappings']['role_name'] = role_details.role_name
+                    user_update_obj['user_role_mappings']['permission_arr'] = role_details.permission_arr
+
+                    await this.roleModelObj.updateOne({_id : reqBody.user_id}, {$set : user_update_obj})
+                    global.Helpers.successStatusBuild(res, 'Role assigned successfully')
+                }
+                else {
+                    global.Helpers.badRequestStatusBuild(res, 'Role not found')
+                }
+            }
+            else {
+                global.Helpers.badRequestStatusBuild(res, 'No user found')
+            }
         }
         catch (e) {
             console.log(e)

@@ -19,3 +19,5 @@ class permissionModel extends Model {
         super('tbl_permissions', permissionSchema)
     }
 }
+
+module.exports = permissionModel

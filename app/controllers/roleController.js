@@ -13,7 +13,7 @@ module.exports = class roleController {
                 role_insert_obj['role_name'] = reqBody.role_name
                 if (reqBody.permission_name) {
                     role_insert_obj['role_permission_mappings'] = {}
-                    role_insert_obj['role_permission_mappings']['permission_name_arr'] = reqBody.permission_name_arr
+                    role_insert_obj['role_permission_mappings']['permission_arr'] = reqBody.permission_name_arr
                 }
                 let insert_role = await this.roleModelObj.singleUpload(role_insert_obj)
                 if (insert_role) {
@@ -32,7 +32,7 @@ module.exports = class roleController {
                 role_update_obj['role_name'] = reqBody.role_name
                 if (reqBody.permission_name) {
                     role_update_obj['role_permission_mappings'] = {}
-                    role_update_obj['role_permission_mappings']['permission_name_arr'] = reqBody.permission_name_arr
+                    role_update_obj['role_permission_mappings']['permission_arr'] = reqBody.permission_name_arr
                 }
 
                 let update_role = await this.roleModelObj.updateOne(role_update_cond, role_update_obj)
@@ -75,6 +75,39 @@ module.exports = class roleController {
             else {
                 global.Helpers.badRequestStatusBuild(res, 'Some error occurred!')
             }
+        }
+        catch (e) {
+            console.log(e)
+            global.Helpers.badRequestStatusBuild(res, 'Some error occurred!')
+        }
+    }
+
+    addPermissionToRole = async(req, res) => {
+        try {
+            let reqBody = req.body
+            let response_dataset = {}
+            if(!reqBody.role_id) {
+                global.Helpers.badRequestStatusBuild(res, 'role id is required!')
+            }
+            let role_id = reqBody.role_id
+            let role_details = await this.roleModelObj.findByAny({_id : role_id})
+            if (role_details) {
+                let permission_arr = reqBody.permissions
+                if (permission_arr.length > 0) {
+                    let role_update_obj = {}
+                    role_update_obj['role_permission_mappings']['permission_arr'] = permission_arr
+
+                    await this.roleModelObj.updateOne({_id : role_id}, {$set : role_update_obj})
+                    global.Helpers.successStatusBuild(res, 'updates successfully')
+                }
+                else {
+                    global.Helpers.badRequestStatusBuild(res, 'No permission provided')
+                }
+            }
+            else {
+                global.Helpers.badRequestStatusBuild(res, 'No role found')
+            }
+            
         }
         catch (e) {
             console.log(e)

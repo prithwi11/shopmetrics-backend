@@ -28,4 +28,13 @@ middlewares = [
 ]
 router.route('/add-user')
     .post(middlewares, this.userControllerObj.addAdminUser)
+
+middlewares = [
+    commonMiddlewareObj.validateToken,
+    userMiddlewareObj.addRoleToUserValidationRule(),
+    commonMiddlewareObj.checkforerrors
+]
+router.route('/add-role')
+    .post(middlewares, this.userControllerObj.assignRoleToUser)
+    
 module.exports = router

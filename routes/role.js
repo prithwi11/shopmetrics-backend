@@ -20,4 +20,13 @@ middlewares = [
 router.route('/save')
     .post(middlewares, this.roleControllerObj.save)
 
+middlewares = [
+    commonMiddlewareObj.validateToken,
+    roleMiddlewareObj.addPermissionToRoleValidationRule(),
+    commonMiddlewareObj.checkforerrors
+]
+
+router.route('/add-permissions')
+    .post(middlewares, this.roleControllerObj.addPermissionToRole)
+
 module.exports = router
